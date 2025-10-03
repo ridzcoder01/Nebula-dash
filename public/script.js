@@ -575,4 +575,95 @@ function showToast(title, message, type = 'success') {
     
     // Set content
     toastTitle.textContent = title;
-   
+    toastText.textContent = message;
+    
+    // Set appropriate icon with animation
+    const icon = toastIcon.querySelector('i');
+    if (type === 'success') {
+        icon.className = 'fas fa-check-circle';
+    } else if (type === 'error') {
+        icon.className = 'fas fa-exclamation-circle';
+    }
+    
+    // Show toast with bounce effect
+    toast.classList.add('show');
+    
+    // Add a subtle shake effect for errors
+    if (type === 'error') {
+        toast.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+            toast.style.animation = '';
+        }, 500);
+    }
+    
+    // Hide after 4 seconds with smooth transition
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 4000);
+}
+
+// Add shake animation for errors
+const shakeKeyframes = `
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        75% { transform: translateX(5px); }
+    }
+`;
+
+// Inject shake animation
+if (!document.getElementById('shake-animation')) {
+    const style = document.createElement('style');
+    style.id = 'shake-animation';
+    style.textContent = shakeKeyframes;
+    document.head.appendChild(style);
+}
+
+// Smooth scroll to sections
+function smoothScrollTo(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+// Initialize Application
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('WhatsApp Bot Management Dashboard initialized');
+    
+    // Add entrance animations
+    setTimeout(addEntranceAnimations, 100);
+    
+    // Load sessions
+    loadSessions();
+    
+    // Add smooth scrolling to refresh button
+    refreshBtn.addEventListener('click', () => {
+        smoothScrollTo('sessions-section');
+    });
+});
+
+// Optimized auto-refresh with better performance
+let refreshInterval;
+
+function startAutoRefresh() {
+    clearInterval(refreshInterval);
+    refreshInterval = setInterval(() => {
+        if (!isLoading && !document.hidden) {
+            loadSessions();
+        }
+    }, 30000);
+}
+
+// Start auto-refresh
+startAutoRefresh();
+
+// Handle visibility change to refresh when tab becomes active
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !isLoading) {
+        loadSessions();
+    }
+});
